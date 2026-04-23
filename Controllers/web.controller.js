@@ -1,18 +1,22 @@
 const Web = require("../models/Web");
 
-
 // ======================
-// OBTENER TODAS LAS WEBS DEL USUARIO
+// OBTENER TODAS LAS WEBS
 // ======================
 exports.getWebs = async (req, res) => {
   try {
-    const webs = await Web.find({ usuarioId: req.user.id });
+    console.log("USER DEL TOKEN:", req.user.id);
+
+    // 🔥 TEMPORAL: trae todas para verificar
+    const webs = await Web.find({});
+
+    console.log("WEBS ENCONTRADAS:", webs.length);
+
     res.json(webs);
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
 };
-
 
 // ======================
 // CREAR WEB
@@ -36,9 +40,8 @@ exports.createWeb = async (req, res) => {
   }
 };
 
-
 // ======================
-// ACTUALIZAR WEB (SOLO DEL USUARIO)
+// ACTUALIZAR WEB
 // ======================
 exports.updateWeb = async (req, res) => {
   try {
@@ -61,9 +64,8 @@ exports.updateWeb = async (req, res) => {
   }
 };
 
-
 // ======================
-// ELIMINAR WEB (SOLO DEL USUARIO)
+// ELIMINAR WEB
 // ======================
 exports.deleteWeb = async (req, res) => {
   try {
