@@ -7,7 +7,7 @@ const {
   createWeb,
   updateWeb,
   deleteWeb
-} = require("../Controllers/webController");
+} = require("../Controllers/web.controller");
 
 router.get("/", auth, getWebs);
 router.post("/", auth, createWeb);

@@ -24,21 +24,25 @@ app.get("/", (req, res) => {
   res.send(`
     <h1>Webs Registradas</h1>
 
-    <button onclick="cargarWebs()">Ver Webs</button>
-
-    <div id="lista"></div>
+    <div id="lista">Cargando webs...</div>
 
     <script>
       async function cargarWebs() {
         try {
+
+          // 🔥 TOKEN
           const token = localStorage.getItem("token");
+          console.log("TOKEN:", token);
 
           if (!token) {
-            alert("Debes hacer login primero");
+            document.getElementById("lista").innerHTML =
+              "<p style='color:red;'>No hay token. Haz login primero.</p>";
             return;
           }
 
-          const res = await fetch("/api/webs", {
+          // 🔥 FETCH CORRECTO
+          const res = await fetch("http://localhost:3000/api/webs", {
+            method: "GET",
             headers: {
               "Content-Type": "application/json",
               "Authorization": "Bearer " + token
@@ -47,10 +51,15 @@ app.get("/", (req, res) => {
 
           const data = await res.json();
 
-          console.log("WEBs:", data);
+          console.log("RESPUESTA:", data);
 
           const lista = document.getElementById("lista");
           lista.innerHTML = "";
+
+          if (!Array.isArray(data) || data.length === 0) {
+            lista.innerHTML = "<p>No hay webs aún</p>";
+            return;
+          }
 
           for (let i = 0; i < data.length; i++) {
             const w = data[i];
@@ -69,9 +78,13 @@ app.get("/", (req, res) => {
 
         } catch (err) {
           console.log("ERROR:", err);
-          alert("Error al cargar webs");
+          document.getElementById("lista").innerHTML =
+            "<p style='color:red;'>Error al cargar webs</p>";
         }
       }
+
+      // 🔥 AUTO EJECUCIÓN
+      window.onload = cargarWebs;
     </script>
   `);
 });
