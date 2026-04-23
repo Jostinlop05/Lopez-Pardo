@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/Jostinlop05/Lopez-Pardo/issues"
   },
-  "homepage": "https://github.com/Jostinlop05/Lopez-Pardo#readme"
+  "homepage": "https://github.com/Jostinlop05/Lopez-Pardo#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }
