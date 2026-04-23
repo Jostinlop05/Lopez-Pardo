@@ -21,15 +21,56 @@ app.use("/api/webs", require("./routes/webRoutes"));
 
 app.get("/", (req, res) => {
   res.send(`
-    <h1>Webs Registradas</h1>
+    <h1>Login</h1>
 
+    <input id="email" placeholder="Email"><br><br>
+    <input id="password" type="password" placeholder="Password"><br><br>
+    <button onclick="login()">Iniciar sesión</button>
+
+    <hr>
+
+    <h1>Webs Registradas</h1>
     <div id="lista">Cargando webs...</div>
 
     <script>
+
+      async function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await res.json();
+
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+            alert("Login exitoso");
+            cargarWebs();
+          } else {
+            alert(data.msg);
+          }
+
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
       async function cargarWebs() {
         try {
+          const token = localStorage.getItem("token");
 
-          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE2NTFhNjZmNjhkMGZkOWU0N2QzYiIsImlhdCI6MTc3Njk3NDE4MSwiZXhwIjoxNzc2OTc3NzgxfQ.t9NwCqbx7kYEyghXXAy82tOjJCPSOjB77QFyusjuUj8"; // 🔥 PON TU TOKEN REAL
+          if (!token) {
+            document.getElementById("lista").innerHTML =
+              "<p style='color:red;'>Debes iniciar sesión</p>";
+            return;
+          }
 
           const res = await fetch("/api/webs", {
             method: "GET",
@@ -96,7 +137,7 @@ app.get("/", (req, res) => {
 
       async function eliminarWeb(id) {
         try {
-          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE2NTFhNjZmNjhkMGZkOWU0N2QzYiIsImlhdCI6MTc3Njk3NDE4MSwiZXhwIjoxNzc2OTc3NzgxfQ.t9NwCqbx7kYEyghXXAy82tOjJCPSOjB77QFyusjuUj8";
+          const token = localStorage.getItem("token");
 
           await fetch("/api/webs/" + id, {
             method: "DELETE",
@@ -119,7 +160,7 @@ app.get("/", (req, res) => {
         const contenido = prompt("Nuevo contenido:");
 
         try {
-          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE2NTFhNjZmNjhkMGZkOWU0N2QzYiIsImlhdCI6MTc3Njk3NDE4MSwiZXhwIjoxNzc2OTc3NzgxfQ.t9NwCqbx7kYEyghXXAy82tOjJCPSOjB77QFyusjuUj8";
+          const token = localStorage.getItem("token");
 
           await fetch("/api/webs/" + id, {
             method: "PUT",
@@ -143,6 +184,7 @@ app.get("/", (req, res) => {
       }
 
       window.onload = cargarWebs;
+
     </script>
   `);
 });
