@@ -26,6 +26,19 @@ app.get("/", (req, res) => {
     <input id="email" placeholder="Email"><br><br>
     <input id="password" type="password" placeholder="Password"><br><br>
     <button onclick="login()">Iniciar sesión</button>
+    <button onclick="logout()">Cerrar sesión</button>
+
+    <hr>
+
+    <h2>Crear nueva web</h2>
+
+    <div id="crearWebForm" style="display:none;">
+      <input id="titulo" placeholder="Título"><br><br>
+      <input id="color" placeholder="Color"><br><br>
+      <textarea id="contenido" placeholder="Contenido"></textarea><br><br>
+
+      <button onclick="crearWeb()">➕ Crear Web</button>
+    </div>
 
     <hr>
 
@@ -33,6 +46,17 @@ app.get("/", (req, res) => {
     <div id="lista">Cargando webs...</div>
 
     <script>
+
+      function verificarSesion() {
+        const token = localStorage.getItem("token");
+        const form = document.getElementById("crearWebForm");
+
+        if (token) {
+          form.style.display = "block";
+        } else {
+          form.style.display = "none";
+        }
+      }
 
       async function login() {
         const email = document.getElementById("email").value;
@@ -52,10 +76,64 @@ app.get("/", (req, res) => {
           if (data.token) {
             localStorage.setItem("token", data.token);
             alert("Login exitoso");
+
+            verificarSesion();
             cargarWebs();
           } else {
             alert(data.msg);
           }
+
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      function logout() {
+        localStorage.removeItem("token");
+        alert("Sesión cerrada");
+
+        verificarSesion();
+        cargarWebs();
+      }
+
+      async function crearWeb() {
+        try {
+          const token = localStorage.getItem("token");
+
+          if (!token) {
+            alert("Debes iniciar sesión");
+            return;
+          }
+
+          const titulo = document.getElementById("titulo").value;
+          const color = document.getElementById("color").value;
+          const contenido = document.getElementById("contenido").value;
+
+          if (!titulo || !color || !contenido) {
+            alert("Completa todos los campos");
+            return;
+          }
+
+          await fetch("/api/webs", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+              titulo,
+              color,
+              contenido
+            })
+          });
+
+          alert("Web creada");
+
+          document.getElementById("titulo").value = "";
+          document.getElementById("color").value = "";
+          document.getElementById("contenido").value = "";
+
+          cargarWebs();
 
         } catch (err) {
           console.log(err);
@@ -183,7 +261,10 @@ app.get("/", (req, res) => {
         }
       }
 
-      window.onload = cargarWebs;
+      window.onload = function() {
+        verificarSesion();
+        cargarWebs();
+      };
 
     </script>
   `);
