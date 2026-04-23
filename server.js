@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
         try {
 
           // 🔥 TOKEN
-          const token = localStorage.getItem("token");
+          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE2NTFhNjZmNjhkMGZkOWU0N2QzYiIsImlhdCI6MTc3Njk3NDE4MSwiZXhwIjoxNzc2OTc3NzgxfQ.t9NwCqbx7kYEyghXXAy82tOjJCPSOjB77QFyusjuUj8";
           console.log("TOKEN:", token);
 
           if (!token) {
