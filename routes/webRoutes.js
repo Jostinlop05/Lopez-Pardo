@@ -2,13 +2,12 @@ const express = require("express");
 const router = express.Router();
 
 const auth = require("../middleware/auth");
-
 const {
   getWebs,
   createWeb,
   updateWeb,
   deleteWeb
-} = require("../controllers/web.controller");
+} = require("../Controllers/webController");
 
 router.get("/", auth, getWebs);
 router.post("/", auth, createWeb);

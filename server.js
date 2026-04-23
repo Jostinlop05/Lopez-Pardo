@@ -30,37 +30,47 @@ app.get("/", (req, res) => {
 
     <script>
       async function cargarWebs() {
-        const token = localStorage.getItem("token");
+        try {
+          const token = localStorage.getItem("token");
 
-        if (!token) {
-          alert("Debes tener token (haz login antes)");
-          return;
-        }
-
-        const res = await fetch("/api/webs", {
-          headers: {
-            "Authorization": token
+          if (!token) {
+            alert("Debes hacer login primero");
+            return;
           }
-        });
 
-        const webs = await res.json();
+          const res = await fetch("/api/webs", {
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + token
+            }
+          });
 
-        const lista = document.getElementById("lista");
-        lista.innerHTML = "";
+          const data = await res.json();
 
-        webs.forEach(w => {
-          const div = document.createElement("div");
+          console.log("WEBs:", data);
 
-          div.innerHTML = \`
-            <div style="border:1px solid black; margin:10px; padding:10px;">
-              <h3>\${w.titulo}</h3>
-              <p><b>Color:</b> \${w.color}</p>
-              <p>\${w.contenido}</p>
-            </div>
-          \`;
+          const lista = document.getElementById("lista");
+          lista.innerHTML = "";
 
-          lista.appendChild(div);
-        });
+          for (let i = 0; i < data.length; i++) {
+            const w = data[i];
+
+            const div = document.createElement("div");
+
+            div.innerHTML =
+              "<div style='border:1px solid black; margin:10px; padding:10px;'>" +
+              "<h3>" + w.titulo + "</h3>" +
+              "<p><b>Color:</b> " + w.color + "</p>" +
+              "<p>" + w.contenido + "</p>" +
+              "</div>";
+
+            lista.appendChild(div);
+          }
+
+        } catch (err) {
+          console.log("ERROR:", err);
+          alert("Error al cargar webs");
+        }
       }
     </script>
   `);
