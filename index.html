@@ -1,0 +1,46 @@
+<h1>Login</h1>
+
+<input id="email" placeholder="Email"><br><br>
+<input id="password" placeholder="Password"><br><br>
+
+<button onclick="login()">Login</button>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Webs Personalizables</title>
+</head>
+<body>
+
+  <h1>Crear Web</h1>
+
+  <input id="titulo" placeholder="Título"><br><br>
+  <input id="color" placeholder="Color"><br><br>
+  <input id="contenido" placeholder="Contenido"><br><br>
+
+  <button onclick="crearWeb()">Crear Web</button>
+
+  <script>
+    async function crearWeb() {
+      const titulo = document.getElementById("titulo").value;
+      const color = document.getElementById("color").value;
+      const contenido = document.getElementById("contenido").value;
+
+      const token = localStorage.getItem("token");
+
+      const res = await fetch("http://localhost:3000/api/webs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify({ titulo, color, contenido })
+      });
+
+      const data = await res.json();
+      alert(JSON.stringify(data));
+    }
+  </script>
+
+</body>
+</html>
