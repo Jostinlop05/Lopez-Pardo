@@ -1,16 +1,22 @@
 const Web = require("../models/Web");
 
-// OBTENER TODAS LAS WEBS
+
+// ======================
+// OBTENER TODAS LAS WEBS DEL USUARIO
+// ======================
 exports.getWebs = async (req, res) => {
   try {
     const webs = await Web.find({ usuarioId: req.user.id });
     res.json(webs);
   } catch (err) {
-    res.status(500).json({ msg: "Error al obtener webs" });
+    res.status(500).json({ msg: err.message });
   }
 };
 
+
+// ======================
 // CREAR WEB
+// ======================
 exports.createWeb = async (req, res) => {
   try {
     const { titulo, color, contenido } = req.body;
@@ -23,38 +29,58 @@ exports.createWeb = async (req, res) => {
     });
 
     await web.save();
-    res.json(web);
+
+    res.status(201).json(web);
   } catch (err) {
-    res.status(500).json({ msg: "Error al crear web" });
+    res.status(500).json({ msg: err.message });
   }
 };
 
-// ACTUALIZAR WEB
+
+// ======================
+// ACTUALIZAR WEB (SOLO DEL USUARIO)
+// ======================
 exports.updateWeb = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const updated = await Web.findByIdAndUpdate(
-      id,
+    const web = await Web.findOneAndUpdate(
+      { _id: id, usuarioId: req.user.id },
       req.body,
       { new: true }
     );
 
-    res.json(updated);
+    if (!web) {
+      return res.status(404).json({ msg: "Web no encontrada" });
+    }
+
+    res.json(web);
+
   } catch (err) {
-    res.status(500).json({ msg: "Error al actualizar web" });
+    res.status(500).json({ msg: err.message });
   }
 };
 
-// ELIMINAR WEB
+
+// ======================
+// ELIMINAR WEB (SOLO DEL USUARIO)
+// ======================
 exports.deleteWeb = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await Web.findByIdAndDelete(id);
+    const web = await Web.findOneAndDelete({
+      _id: id,
+      usuarioId: req.user.id
+    });
 
-    res.json({ msg: "Web eliminada" });
+    if (!web) {
+      return res.status(404).json({ msg: "Web no encontrada" });
+    }
+
+    res.json({ msg: "Web eliminada correctamente" });
+
   } catch (err) {
-    res.status(500).json({ msg: "Error al eliminar web" });
+    res.status(500).json({ msg: err.message });
   }
 };

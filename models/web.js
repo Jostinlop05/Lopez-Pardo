@@ -1,15 +1,13 @@
 const mongoose = require("mongoose");
 
 const webSchema = new mongoose.Schema({
-  titulo: {
-    type: String,
-    required: true
-  },
+  titulo: String,
   color: String,
   contenido: String,
   usuarioId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    required: true
   }
 });
 
