@@ -66,12 +66,17 @@ app.get("/", (req, res) => {
 
             const div = document.createElement("div");
 
-            div.innerHTML =
-              "<div style='border:1px solid black; margin:10px; padding:10px;'>" +
-              "<h3>" + w.titulo + "</h3>" +
-              "<p><b>Color:</b> " + w.color + "</p>" +
-              "<p>" + w.contenido + "</p>" +
-              "</div>";
+div.innerHTML =
+  "<div style='border:1px solid black; margin:10px; padding:10px;'>" +
+  "<h3>" + w.titulo + "</h3>" +
+  "<p><b>Color:</b> " + w.color + "</p>" +
+  "<p>" + w.contenido + "</p>" +
+
+  "<br>" +
+  "<button>✏️ Editar</button>" +
+  "<button>🗑️ Eliminar</button>" +
+
+  "</div>";
 
             lista.appendChild(div);
           }
