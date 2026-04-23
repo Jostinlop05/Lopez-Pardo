@@ -10,75 +10,65 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conexión MongoDB
+// MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB conectado"))
-  .catch(err => console.error("❌ Error MongoDB:", err));
+  .catch(err => console.log("❌ Error MongoDB:", err));
 
-// Rutas (RESPETANDO TU R MAYÚSCULA)
+// Rutas
 app.use("/api/auth", require("./routes/auth.Routes.js"));
 app.use("/api/webs", require("./routes/webRoutes"));
 
-// Vista en navegador
+
 app.get("/", (req, res) => {
   res.send(`
-    <h1>Webs Personalizables</h1>
+    <h1>Webs Registradas</h1>
 
-    <h2>Login</h2>
-    <input id="email" placeholder="Email"><br><br>
-    <input id="password" placeholder="Password"><br><br>
-    <button onclick="login()">Login</button>
+    <button onclick="cargarWebs()">Ver Webs</button>
 
-    <h2>Crear Web</h2>
-    <input id="titulo" placeholder="Título"><br><br>
-    <input id="color" placeholder="Color"><br><br>
-    <input id="contenido" placeholder="Contenido"><br><br>
-    <button onclick="crearWeb()">Crear</button>
+    <div id="lista"></div>
 
     <script>
-      async function login() {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        const res = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ email, password })
-        });
-
-        const data = await res.json();
-        localStorage.setItem("token", data.token);
-
-        alert("Login exitoso");
-      }
-
-      async function crearWeb() {
-        const titulo = document.getElementById("titulo").value;
-        const color = document.getElementById("color").value;
-        const contenido = document.getElementById("contenido").value;
-
+      async function cargarWebs() {
         const token = localStorage.getItem("token");
 
+        if (!token) {
+          alert("Debes tener token (haz login antes)");
+          return;
+        }
+
         const res = await fetch("/api/webs", {
-          method: "POST",
           headers: {
-            "Content-Type": "application/json",
             "Authorization": token
-          },
-          body: JSON.stringify({ titulo, color, contenido })
+          }
         });
 
-        const data = await res.json();
-        alert(JSON.stringify(data));
+        const webs = await res.json();
+
+        const lista = document.getElementById("lista");
+        lista.innerHTML = "";
+
+        webs.forEach(w => {
+          const div = document.createElement("div");
+
+          div.innerHTML = \`
+            <div style="border:1px solid black; margin:10px; padding:10px;">
+              <h3>\${w.titulo}</h3>
+              <p><b>Color:</b> \${w.color}</p>
+              <p>\${w.contenido}</p>
+            </div>
+          \`;
+
+          lista.appendChild(div);
+        });
       }
     </script>
   `);
 });
 
+// Server
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor en http://localhost:${PORT}`);
+  console.log("🚀 http://localhost:" + PORT);
 });
