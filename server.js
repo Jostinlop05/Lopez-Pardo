@@ -19,7 +19,6 @@ mongoose.connect(process.env.MONGO_URI)
 app.use("/api/auth", require("./routes/auth.Routes.js"));
 app.use("/api/webs", require("./routes/webRoutes"));
 
-
 app.get("/", (req, res) => {
   res.send(`
     <h1>Webs Registradas</h1>
@@ -30,18 +29,9 @@ app.get("/", (req, res) => {
       async function cargarWebs() {
         try {
 
-          // 🔥 TOKEN
-          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE2NTFhNjZmNjhkMGZkOWU0N2QzYiIsImlhdCI6MTc3Njk3NDE4MSwiZXhwIjoxNzc2OTc3NzgxfQ.t9NwCqbx7kYEyghXXAy82tOjJCPSOjB77QFyusjuUj8";
-          console.log("TOKEN:", token);
+          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE2NTFhNjZmNjhkMGZkOWU0N2QzYiIsImlhdCI6MTc3Njk3NDE4MSwiZXhwIjoxNzc2OTc3NzgxfQ.t9NwCqbx7kYEyghXXAy82tOjJCPSOjB77QFyusjuUj8"; // 🔥 PON TU TOKEN REAL
 
-          if (!token) {
-            document.getElementById("lista").innerHTML =
-              "<p style='color:red;'>No hay token. Haz login primero.</p>";
-            return;
-          }
-
-          // 🔥 FETCH CORRECTO
-          const res = await fetch("http://localhost:3000/api/webs", {
+          const res = await fetch("/api/webs", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -51,8 +41,6 @@ app.get("/", (req, res) => {
 
           const data = await res.json();
 
-          console.log("RESPUESTA:", data);
-
           const lista = document.getElementById("lista");
           lista.innerHTML = "";
 
@@ -61,25 +49,43 @@ app.get("/", (req, res) => {
             return;
           }
 
-          for (let i = 0; i < data.length; i++) {
-            const w = data[i];
+          data.forEach(w => {
 
-            const div = document.createElement("div");
+            const card = document.createElement("div");
+            card.style.border = "1px solid black";
+            card.style.margin = "10px";
+            card.style.padding = "10px";
 
-div.innerHTML =
-  "<div style='border:1px solid black; margin:10px; padding:10px;'>" +
-  "<h3>" + w.titulo + "</h3>" +
-  "<p><b>Color:</b> " + w.color + "</p>" +
-  "<p>" + w.contenido + "</p>" +
+            const titulo = document.createElement("h3");
+            titulo.textContent = w.titulo;
 
-  "<br>" +
-  "<button>✏️ Editar</button>" +
-  "<button>🗑️ Eliminar</button>" +
+            const color = document.createElement("p");
+            color.innerHTML = "<b>Color:</b> " + w.color;
 
-  "</div>";
+            const contenido = document.createElement("p");
+            contenido.textContent = w.contenido;
 
-            lista.appendChild(div);
-          }
+            const btnEditar = document.createElement("button");
+            btnEditar.textContent = "✏️ Editar";
+            btnEditar.onclick = function() {
+              editarWeb(w._id);
+            };
+
+            const btnEliminar = document.createElement("button");
+            btnEliminar.textContent = "🗑️ Eliminar";
+            btnEliminar.onclick = function() {
+              eliminarWeb(w._id);
+            };
+
+            card.appendChild(titulo);
+            card.appendChild(color);
+            card.appendChild(contenido);
+            card.appendChild(document.createElement("br"));
+            card.appendChild(btnEditar);
+            card.appendChild(btnEliminar);
+
+            lista.appendChild(card);
+          });
 
         } catch (err) {
           console.log("ERROR:", err);
@@ -88,7 +94,54 @@ div.innerHTML =
         }
       }
 
-      // 🔥 AUTO EJECUCIÓN
+      async function eliminarWeb(id) {
+        try {
+          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE2NTFhNjZmNjhkMGZkOWU0N2QzYiIsImlhdCI6MTc3Njk3NDE4MSwiZXhwIjoxNzc2OTc3NzgxfQ.t9NwCqbx7kYEyghXXAy82tOjJCPSOjB77QFyusjuUj8";
+
+          await fetch("/api/webs/" + id, {
+            method: "DELETE",
+            headers: {
+              "Authorization": "Bearer " + token
+            }
+          });
+
+          alert("Web eliminada");
+          cargarWebs();
+
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      async function editarWeb(id) {
+        const titulo = prompt("Nuevo título:");
+        const color = prompt("Nuevo color:");
+        const contenido = prompt("Nuevo contenido:");
+
+        try {
+          const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE2NTFhNjZmNjhkMGZkOWU0N2QzYiIsImlhdCI6MTc3Njk3NDE4MSwiZXhwIjoxNzc2OTc3NzgxfQ.t9NwCqbx7kYEyghXXAy82tOjJCPSOjB77QFyusjuUj8";
+
+          await fetch("/api/webs/" + id, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+              titulo,
+              color,
+              contenido
+            })
+          });
+
+          alert("Web actualizada");
+          cargarWebs();
+
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
       window.onload = cargarWebs;
     </script>
   `);
