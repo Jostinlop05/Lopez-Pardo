@@ -1,8 +1,5 @@
 const Web = require("../models/Web");
 
-// ======================
-// OBTENER TODAS LAS WEBS
-// ======================
 exports.getWebs = async (req, res) => {
   try {
     console.log("USER DEL TOKEN:", req.user.id);
@@ -18,9 +15,8 @@ exports.getWebs = async (req, res) => {
   }
 };
 
-// ======================
 // CREAR WEB
-// ======================
+
 exports.createWeb = async (req, res) => {
   try {
     const { titulo, color, contenido } = req.body;
@@ -40,9 +36,9 @@ exports.createWeb = async (req, res) => {
   }
 };
 
-// ======================
+
 // ACTUALIZAR WEB
-// ======================
+
 exports.updateWeb = async (req, res) => {
   try {
     const { id } = req.params;
@@ -64,9 +60,9 @@ exports.updateWeb = async (req, res) => {
   }
 };
 
-// ======================
+
 // ELIMINAR WEB
-// ======================
+
 exports.deleteWeb = async (req, res) => {
   try {
     const { id } = req.params;
